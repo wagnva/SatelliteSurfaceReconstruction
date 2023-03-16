@@ -37,7 +37,10 @@ class SSRConfig(BaseModel):
     texturing_backends: List[str]
 
     dataset_adapter: str
-    reconstruct_sfm_mvs: Union[bool, int]
+    mvs_version: str
+    reconstruct_sfm: Union[bool, int]
+    reconstruct_mvs: Union[bool, int]
+    reconstruct_aggregate: Union[bool, int]
     run_input_adapter: Union[bool, int]
     extract_msi: Union[bool, int] = False
     extract_pan: Union[bool, int] = False

@@ -33,15 +33,11 @@ class VisSatPipeline:
         assert os.path.isdir(self.colmap_vissat_lib_dp)
         os.environ["LD_LIBRARY_PATH"] = self.colmap_vissat_lib_dp
 
-    def run(self, reconstruct_sfm_mvs):
-        dataset_dp = self.ssr_config.satellite_image_pan_dp
-        workspace_dp = self.ssr_config.workspace_vissat_dp
-        mkdir_safely(workspace_dp)
-
+    def create_config_sfm(self):
         create_vissat_config_from_ssr_config(
             vissat_config_ofp=self.pm.vissat_config_fp,
-            dataset_dp=dataset_dp,
-            workspace_dp=workspace_dp,
+            dataset_dp=self.ssr_config.satellite_image_pan_dp,
+            workspace_dp=self.ssr_config.workspace_vissat_dp,
             ssr_config=self.ssr_config,
             clean_data=False,
             crop_image=False,
@@ -50,12 +46,51 @@ class VisSatPipeline:
             colmap_sfm_perspective=True,
             inspect_sfm_perspective=True,
             reparam_depth=True,
-            colmap_mvs=True,
-            aggregate_2p5d=True,
-            aggregate_3d=True,
+            colmap_mvs=False,
+            aggregate_2p5d=False,
+            aggregate_3d=False,
         )
 
-        if reconstruct_sfm_mvs:
+    def create_config_mvs(self):
+        create_vissat_config_from_ssr_config(
+            vissat_config_ofp=self.pm.vissat_config_fp,
+            dataset_dp=self.ssr_config.satellite_image_pan_dp,
+            workspace_dp=self.ssr_config.workspace_vissat_dp,
+            ssr_config=self.ssr_config,
+            clean_data=False,
+            crop_image=False,
+            derive_approx=False,
+            choose_subset=False,
+            colmap_sfm_perspective=False,
+            inspect_sfm_perspective=False,
+            reparam_depth=False,
+            colmap_mvs=True,
+            aggregate_2p5d=False,
+            aggregate_3d=False,
+        )
+
+    def create_config_aggregate(self):
+        create_vissat_config_from_ssr_config(
+            vissat_config_ofp=self.pm.vissat_config_fp,
+            dataset_dp=self.ssr_config.satellite_image_pan_dp,
+            workspace_dp=self.ssr_config.workspace_vissat_dp,
+            ssr_config=self.ssr_config,
+            clean_data=False,
+            crop_image=False,
+            derive_approx=False,
+            choose_subset=False,
+            colmap_sfm_perspective=False,
+            inspect_sfm_perspective=False,
+            reparam_depth=False,
+            colmap_mvs=False,
+            aggregate_2p5d=True,
+            aggregate_3d=False,
+        )
+
+    def run(self, should_run):
+        mkdir_safely(self.ssr_config.workspace_vissat_dp)
+
+        if should_run:
             logger.vinfo("self.pm.vissat_config_fp", self.pm.vissat_config_fp)
 
             # see https://github.com/Kai-46/VisSatSatelliteStereo/blob/master/stereo_pipeline.py

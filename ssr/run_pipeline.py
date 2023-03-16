@@ -14,7 +14,7 @@ from ssr.surface_rec.backends.backend_manager import (
     BackendManager,
 )
 from ssr.input_adapters.run_input_adapter import RunInputAdapterPipeline
-
+from ssr.sfm_mvs_rec.mvs.run_mvs_version import RunMVSVersion
 from ssr.config.ssr_config import SSRConfig
 
 
@@ -68,7 +68,22 @@ if __name__ == "__main__":
         run_input_adapter=ssr_config.run_input_adapter,
     )
 
-    vissat_pipeline.run(ssr_config.reconstruct_sfm_mvs)
+    # run structure from motion
+    vissat_pipeline.create_config_sfm()
+    vissat_pipeline.run(ssr_config.reconstruct_sfm)
+
+    # run multi-view-stereo
+    mvs_version = RunMVSVersion(pm)
+    mvs_version.run(
+        mvs_version_py_path=ssr_config.mvs_version,
+        run=ssr_config.reconstruct_mvs,
+    )
+
+    # todo insert possible switching of mvs results
+
+    # run aggregation of results of mvs
+    vissat_pipeline.create_config_aggregate()
+    vissat_pipeline.run(ssr_config.reconstruct_aggregate)
 
     pm.check_rec_pan_png_idp()
     preparation_pipeline = PreparationPipeline(pm)
