@@ -83,8 +83,8 @@ class VisSatPipeline:
             inspect_sfm_perspective=False,
             reparam_depth=False,
             colmap_mvs=False,
-            aggregate_2p5d=True,
-            aggregate_3d=False,
+            aggregate_2p5d=False,
+            aggregate_3d=True,
         )
 
     def run(self, should_run):
